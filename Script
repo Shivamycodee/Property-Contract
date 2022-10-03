@@ -1,0 +1,30 @@
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+        var propertyContract = new web3.eth.Contract([{"constant":false,"inputs":[{"internalType":"uint256","name":"_propertyid","type":"uint256"},{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_owner","type":"string"},{"internalType":"uint256","name":"_value","type":"uint256"},{"internalType":"uint256","name":"_area","type":"uint256"}],"name":"addProperty","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"_propertyid","type":"uint256"},{"internalType":"string","name":"_newOwner","type":"string"}],"name":"transferPropertyOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[],"name":"contractOwner","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"properties","outputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"owner","type":"string"},{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"area","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"_propertyid","type":"uint256"}],"name":"queryPropertyById","outputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"owner","type":"string"},{"internalType":"uint256","name":"area","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+,'0x65E0BE88a9b4A5f3459FCA699F1baff8854ab623');
+
+        function addProperty() {
+            propertyContract.methods.addProperty($("#PropertyId").val(), $("#PropertyName").val(), $("#PropertyOwner").val(), $("#PropertyValue").val(), $("#PropertyArea").val()).send(
+                {
+                    from: '0xF386Ca58F1De08dd2411B77e3AC964B98c274621', gas: 107035
+                }).on('transactionHash', function (hash) {
+                    document.getElementById("AddPropertyResult").innerHTML = "Transaction hash is " + hash
+                })
+        }
+
+        function queryPropertyById() {
+            propertyContract.methods.queryPropertyById($("#QueryPropertyId").val()).call().then(function (result) {
+                document.getElementById("PropertyDetails").innerHTML = "Property Name is " + result[0] + " and Owner is " + result[1]
+            })
+        }
+
+        function transferProperty() {
+            propertyContract.methods.transferPropertyOwnership($("#TransferPropertyId").val(), $("#NewOwner").val()).send(
+                { from: '0xF386Ca58F1De08dd2411B77e3AC964B98c274621', gas: 107035 }).on('transactionHash', function (hash) {
+                    document.getElementById("TransferPropertyResult").innerHTML = "Transaction hash is " + hash
+                })
+        }
